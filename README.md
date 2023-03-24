@@ -1,5 +1,5 @@
 # supply_chain_dashboard
-Scripts to load snowflake tables, and Tableau dashboard
+Scripts to load snowflake tables, and download Tableau dashboard
 
 Steps:
 1. Use the sql script to create the necessary Snowflake Tables
