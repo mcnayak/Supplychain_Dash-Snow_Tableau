@@ -1,13 +1,28 @@
 
-use database HOL_DB;
+use role accountadmin; 
+create database suppy_acclerator_db; 
+create or replace schema public;
+--use database HOL_DB;
+--use schema public; 
 
-use DATABASE SUPPLY_ACCLERATOR;
 
-create or replace schema PUBLIC;
+create or replace storage integration supply_chain_store
+  type = external_stage
+  storage_provider = s3
+  storage_aws_role_arn = 'arn:aws:iam::484577546576:role/chandra_snowflake_role'
+  enabled = true
+  storage_allowed_locations = ('s3://sfdc-demo-files/supply_chain_accelerator');
 
-use schema public;
 
-create or replace TABLE BOM (
+CREATE OR REPLACE FILE FORMAT CSV_DATA TYPE = CSV FIELD_DELIMITER = ',' SKIP_HEADER = 1;  
+
+CREATE OR REPLACE STAGE supplychain_load_stage
+  URL = 's3://sfdc-demo-files/supply_chain_accelerator/'
+  STORAGE_INTEGRATION = supply_chain_store
+  FILE_FORMAT = CSV_DATA; 
+
+
+create or replace TABLE "bom" (
 	"Product Code (BOM)" VARCHAR(16777216),
 	"Material Code (BOM)" VARCHAR(16777216)
 );
@@ -127,19 +142,48 @@ create or replace TABLE "Warehouses" (
 	"Warehouse" VARCHAR(16777216)
 );    
 
--- Working command 
--- snowsql -c cnayak -d SUPPLY_ACCELERATOR -s public -r tabrole -D tablename=BOM -o output_file=/tmp/bom.csv -o quiet=true -o friendly=false -o header=false -o output_format=csv
+-- describe table bom;
+-- COPY INTO bom from @~/staged/bom.csv.gz FILE_FORMAT = (TYPE = CSV FIELD_DELIMITER = ',' SKIP_HEADER = 1);
 
-describe table bom;
-COPY INTO bom from @~/staged/bom.csv.gz FILE_FORMAT = (TYPE = CSV FIELD_DELIMITER = ',' SKIP_HEADER = 1);
+ls @supplychain_load_stage;
 
-CREATE OR REPLACE FILE FORMAT CSV_DATA TYPE = CSV FIELD_DELIMITER = ','; 
+COPY INTO "bom"  FROM @supplychain_load_stage/bom.gz;
 
-CREATE OR REPLACE STAGE my_unload_stage
-  FILE_FORMAT = CSV_DATA;
+COPY INTO "Customers"
+  FROM @supplychain_load_stage/customers.gz  ;
 
--- Export 
-COPY INTO @my_unload_stage/bom.csv 
-FROM (select * from bom) 
-FILE_FORMAT = (TYPE = CSV) 
-OVERWRITE=TRUE SINGLE=TRUE HEADER=TRUE COMPRESS=FALSE;
+
+COPY INTO "Events"
+  FROM @supplychain_load_stage/events.gz  ;
+
+
+COPY INTO "F_Materials_Inventory"
+  FROM @supplychain_load_stage/F_Materials_Inventory.gz  ;
+
+COPY INTO "F_Materials_Purchases"
+  FROM @supplychain_load_stage/F_Materials_Purchases.gz  ;
+
+
+COPY INTO "F_Products_Inventory"
+  FROM @supplychain_load_stage/F_Products_Inventory.gz  ;
+
+COPY INTO "F_Products_Sales"
+  FROM @supplychain_load_stage/F_Products_Sales.gz;  
+
+COPY INTO "Materials"
+  FROM @supplychain_load_stage/Materials.gz;  
+
+COPY INTO "Pivot"
+  FROM @supplychain_load_stage/Pivot.gz;  
+
+
+COPY INTO "Products"
+  FROM @supplychain_load_stage/Products.gz;  
+
+COPY INTO "Suppliers"
+  FROM @supplychain_load_stage/Suppliers.gz;    
+
+COPY INTO "Warehouses"
+  FROM @supplychain_load_stage/Warehouses.gz;    
+
+
