@@ -22,7 +22,7 @@ CREATE OR REPLACE STAGE supplychain_load_stage
   FILE_FORMAT = CSV_DATA; 
 
 
-create or replace TABLE "bom" (
+create or replace TABLE "Bom" (
 	"Product Code (BOM)" VARCHAR(16777216),
 	"Material Code (BOM)" VARCHAR(16777216)
 );
@@ -142,7 +142,7 @@ create or replace TABLE "Warehouses" (
 	"Warehouse" VARCHAR(16777216)
 );    
 
--- describe table bom;
+ -- describe table bom;
 -- COPY INTO bom from @~/staged/bom.csv.gz FILE_FORMAT = (TYPE = CSV FIELD_DELIMITER = ',' SKIP_HEADER = 1);
 
 ls @supplychain_load_stage;
