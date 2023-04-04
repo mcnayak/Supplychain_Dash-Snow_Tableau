@@ -1,6 +1,6 @@
 
 use role accountadmin; 
-create database suppy_acclerator_db; 
+create database supply_db; 
 create or replace schema public;
 --use database HOL_DB;
 --use schema public; 
@@ -22,7 +22,7 @@ CREATE OR REPLACE STAGE supplychain_load_stage
   FILE_FORMAT = CSV_DATA; 
 
 
-create or replace TABLE "Bom" (
+create or replace TABLE "BOM" (
 	"Product Code (BOM)" VARCHAR(16777216),
 	"Material Code (BOM)" VARCHAR(16777216)
 );
@@ -145,9 +145,9 @@ create or replace TABLE "Warehouses" (
  -- describe table bom;
 -- COPY INTO bom from @~/staged/bom.csv.gz FILE_FORMAT = (TYPE = CSV FIELD_DELIMITER = ',' SKIP_HEADER = 1);
 
-ls @supplychain_load_stage;
+-- ls @supplychain_load_stage;
 
-COPY INTO "bom"  FROM @supplychain_load_stage/bom.gz;
+COPY INTO "BOM"  FROM @supplychain_load_stage/bom.gz;
 
 COPY INTO "Customers"
   FROM @supplychain_load_stage/customers.gz  ;
@@ -185,5 +185,4 @@ COPY INTO "Suppliers"
 
 COPY INTO "Warehouses"
   FROM @supplychain_load_stage/Warehouses.gz;    
-
 
