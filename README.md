@@ -7,5 +7,6 @@ Steps:
 3. Finally, the script loads data from the S3 bucket to Snowflake tables.
 4. Download the Tableau Dashboard to your desktop, enter your Snowflake account URL and credentials.
 5. Select "Suppy Chain Snowflakes" as the tableau datasource. 
-6. Your Supply Chain Dashboard should now be powered by Snowflake data.
-7. If you are using Tableau Cloud, upload the workbook there.
+6. Choose a 4XL Warehouse size to get a highly performant live dashboard on Snowflake or may be extract the data. 
+7. Your Supply Chain Dashboard should now be powered by Snowflake data.
+8. If you are using Tableau Cloud, upload the workbook there.
